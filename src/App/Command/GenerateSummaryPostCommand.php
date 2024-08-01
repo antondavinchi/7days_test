@@ -10,17 +10,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use DateTime;
 
-class GenerateRandomPostCommand extends Command
+class GenerateSummaryPostCommand extends Command
 {
-    protected static $defaultName = 'app:generate-random-post';
-    protected static $defaultDescription = 'Run app:generate-random-post';
-    private LoremIpsum $loremIpsum;
+    protected static $defaultName = 'app:generate-summary-post';
+    protected static $defaultDescription = 'Run app:generate-summary-post';
+
     private PostManager $postManager;
 
+    private LoremIpsum $loremIpsum;
+
     public function __construct(
-        LoremIpsum $loremIpsum,
         PostManager $postManager,
+        LoremIpsum $loremIpsum,
         string $name = null
     ) {
         parent::__construct($name);
@@ -29,18 +32,15 @@ class GenerateRandomPostCommand extends Command
         $this->loremIpsum = $loremIpsum;
     }
 
-    protected function configure(): void
-    {
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $title = $this->loremIpsum->words(mt_rand(4, 6));
-        $content = $this->loremIpsum->paragraphs(2);
+        $currentDate = new DateTime();
+        $title = "Summary " . $currentDate->format('Y-m-d');
+        $content = $this->loremIpsum->paragraphs();
 
         $this->postManager->addPost($title, $content);
 
-        $output->writeln('A random post has been generated.');
+        $output->writeln('The summary post has been generated.');
 
         return Command::SUCCESS;
     }
